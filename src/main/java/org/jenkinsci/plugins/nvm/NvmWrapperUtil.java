@@ -119,7 +119,7 @@ public class NvmWrapperUtil {
   private Integer installNvm() throws IOException, InterruptedException {
     listener.getLogger().println("Installing nvm\n");
     FilePath installer = build.getWorkspace().child("nvm-installer");
-    installer.copyFrom(new URL("https://raw.github.com/creationix/nvm/master/install.sh"));
+    installer.copyFrom(new URL("https://raw.github.com/creationix/nvm/v0.33.0/install.sh"));
     installer.chmod(0755);
     ArgumentListBuilder args = new ArgumentListBuilder();
 
