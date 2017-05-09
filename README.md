@@ -1,36 +1,55 @@
 # [Jenkins nvm Plugin (nvm-wrapper)](https://wiki.jenkins-ci.org/display/JENKINS/Nvm+Wrapper+Plugin)
 
-[![Build Status](https://img.shields.io/travis/gextech/jenkins-nvm-plugin/master.svg?style=flat)](https://travis-ci.org/gextech/jenkins-nvm-plugin)
+[![Build Status](https://travis-ci.org/jSherz/nvm-wrapper-plugin.svg?branch=master)](https://travis-ci.org/jSherz/nvm-wrapper-plugin)
 
-A java/groovy version of [Jenkins nvm plugin](https://github.com/codevise/jenkins-nvm-plugin), it
-doesn't require `ruby-runtime` to be installed.
+A Java / Groovy version of [Jenkins nvm plugin](https://github.com/codevise/jenkins-nvm-plugin). It does not require Ruby to be installed.
 
 ## Usage
-- Please follow this [steps](https://wiki.jenkins-ci.org/display/JENKINS/Nvm+Wrapper+Plugin)
-                                                                           
-## Build
-- It was builded using gradle 2.3 and Java 1.8
 
-- 'gradle jpi' - Build the Jenkins plugin file, which can then be
-  found in the build directory. The file will currently end in ".hpi".
-- 'gradle install' - Build the Jenkins plugin and install it into your
-  local Maven repository.
-- 'gradle uploadArchives' (or 'gradle deploy') - Deploy your plugin to
-  the Jenkins Maven repository to be included in the Update Center.
-- 'gradle server' - Run a local jenkins to test
+- See [the Nvm Wrapper Plugin on jenkins-ci.org](https://wiki.jenkins-ci.org/display/JENKINS/Nvm+Wrapper+Plugin).
+
+- For a pipeline job:
+
+    ```groovy
+    nvm(version: 'v6.9.4') {
+      // build steps here
+      sh 'env'
+    }
+    ```
+
+## Build
+
+* This project is built with Gradle 3.3 and Java 1.8.
+
+* `gradle jpi`
+
+    Build the Jenkins plugin file, which can then be found in the build directory. The file will currently end in ".hpi".
+
+* `gradle install`
+
+    Build the Jenkins plugin and install it into your local Maven repository.
+
+* `gradle uploadArchives` (or `gradle deploy`)
+
+    Deploy your plugin to the Jenkins Maven repository to be included in the Update Center.
+
+* `gradle server`
+
+    Run a local jenkins to test
 
 ## Features
 
-- Installs `nvm.sh`
-- Installs node version configured for job.
-- Amends build environment to use configured node version.
+* Installs [nvm](https://github.com/creationix/nvm)
+* Installs the configured version of Node.
+* Injects the installed version of Node into the build environment.
+* Compatible with Jenkins pipeline / workflow plugin.
 
 ## Acknowledgements
 
-Based on :
+Based on:
 
-[Jenkins rvm plugin](https://github.com/jenkinsci/rvm-plugin) and
-[Jenkins nvm plugin](https://github.com/codevise/jenkins-nvm-plugin).
+* [Jenkins rvm plugin](https://github.com/jenkinsci/rvm-plugin) and
+* [Jenkins nvm plugin](https://github.com/codevise/jenkins-nvm-plugin).
 
 ## License
 

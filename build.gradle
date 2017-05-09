@@ -3,22 +3,22 @@ buildscript {
     mavenLocal()
     mavenCentral()
     maven {
-      name "jenkins"
-      delegate.url("http://repo.jenkins-ci.org/releases/")
+      name 'jenkins'
+      delegate.url('http://repo.jenkins-ci.org/releases/')
     }
     // The plugin is currently only available via the Jenkins Maven repository.
   }
   dependencies {
-    classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.18.1'
+    classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.21.0'
   }
 }
 
 apply plugin: 'org.jenkins-ci.jpi'
 
-group = "org.jenkins-ci.plugins"
-version = "0.1.1"
-description = "NVM wrapper plugin"
-archivesBaseName = "nvm-wrapper"
+group = 'org.jenkins-ci.plugins'
+version = '0.1.2'
+description = 'NVM wrapper plugin'
+archivesBaseName = 'nvm-wrapper'
 
 sourceCompatibility = '1.8'
 
@@ -26,8 +26,8 @@ jenkinsPlugin {
   coreVersion = '1.609.1'
   displayName = 'nvm wrapper'
   shortName = 'nvm-wrapper'
-  url = "https://wiki.jenkins-ci.org/display/JENKINS/Nvm+Wrapper+Plugin"
-  gitHubUrl = "https://github.com/gextech/jenkins-nvm-plugin"
+  url = 'https://wiki.jenkins-ci.org/display/JENKINS/Nvm+Wrapper+Plugin'
+  gitHubUrl = 'https://github.com/gextech/jenkins-nvm-plugin'
   developers {
     developer {
       id 'atoms'
@@ -36,7 +36,12 @@ jenkinsPlugin {
     }
   }
 }
+
+dependencies {
+  jenkinsPlugins 'org.jenkins-ci.plugins.workflow:workflow-step-api:2.7@jar'
+}
+
 compileJava {
   options.encoding = 'UTF-8'
-  options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+  options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
 }

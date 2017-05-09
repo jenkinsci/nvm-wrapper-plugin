@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.nvm.NvmWrapper
+package org.jenkinsci.plugins.nvm.NvmStep
 
 import lib.LayoutTagLib
 

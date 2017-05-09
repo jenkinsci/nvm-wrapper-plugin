@@ -1,33 +1,31 @@
 package org.jenkinsci.plugins.nvm;
+
 import hudson.AbortException;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
 import hudson.util.ArgumentListBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by atoms on 6/9/16.
- */
+
 public class NvmWrapperUtil {
 
   private static final Logger LOGGER = Logger.getLogger(NvmWrapperUtil.class.getName());
 
-  private AbstractBuild build;
+  private FilePath workspace;
   private Launcher launcher;
-  private BuildListener listener;
+  private PrintStream buildLogger;
   private String nvmPath;
 
-  NvmWrapperUtil(AbstractBuild build, Launcher launcher, BuildListener listener) {
-    this.build = build;
-    this.listener = listener;
+  NvmWrapperUtil(final FilePath workspace, Launcher launcher, PrintStream buildLogger) {
+    this.workspace = workspace;
+    this.buildLogger = buildLogger;
     this.launcher = launcher;
   }
 
@@ -49,18 +47,18 @@ public class NvmWrapperUtil {
     nvmSourceCmd.add("-c");
     nvmSourceCmd.add(" source " + nvmPath +
       " && nvm install " + version +
-      " && nvm use "+ version +
+      " && nvm use " + version +
       " && export > nvm.env");
 
     Map<String, String> afterEnv = toMap(getExport(nvmSourceCmd, "nvm.env"));
 
     Map<String, String> newEnvVars = new HashMap<String, String>();
 
-    afterEnv.forEach((k,v)-> {
+    afterEnv.forEach((k, v) -> {
       String beforeValue = beforeEnv.get(k);
       if (!v.equals(beforeValue)) {
 
-        if (k.equals("PATH")){
+        if (k.equals("PATH")) {
           String path = Arrays.stream(v.split(File.pathSeparator))
             .filter(it -> it.matches(".*\\.nvm.*"))
             .collect(Collectors.joining(File.pathSeparator));
@@ -78,15 +76,15 @@ public class NvmWrapperUtil {
 
   private String getExport(ArgumentListBuilder args, String destFile) throws IOException, InterruptedException {
 
-    Integer statusCode = launcher.launch().pwd(build.getWorkspace()).cmds(args)
-      .stdout(listener.getLogger())
-      .stderr(listener.getLogger()).join();
+    Integer statusCode = launcher.launch().pwd(workspace).cmds(args)
+      .stdout(buildLogger)
+      .stderr(buildLogger).join();
 
     if (statusCode != 0) {
       new AbortException("Failed to fork bash ");
     }
 
-    return build.getWorkspace().child(destFile).readToString();
+    return workspace.child(destFile).readToString();
 
   }
 
@@ -96,7 +94,7 @@ public class NvmWrapperUtil {
     paths.add("~/.nvm/nvm.sh");
     paths.add("/usr/local/nvm/nvm.sh");
 
-    this.nvmPath = paths.stream().filter(path ->{
+    this.nvmPath = paths.stream().filter(path -> {
       ArgumentListBuilder args = new ArgumentListBuilder();
       args.add("bash");
       args.add("-c");
@@ -104,11 +102,9 @@ public class NvmWrapperUtil {
       Integer statusCode = -1;
       try {
         statusCode = launcher.launch().cmds(args)
-          .stdout(listener.getLogger())
-          .stderr(listener.getLogger()).join();
-      } catch (IOException e) {
-        LOGGER.info(e.getMessage(), e);
-      } catch (InterruptedException e) {
+          .stdout(buildLogger)
+          .stderr(buildLogger).join();
+      } catch (IOException | InterruptedException e) {
         LOGGER.info(e.getMessage(), e);
       }
       return statusCode == 0;
@@ -117,19 +113,18 @@ public class NvmWrapperUtil {
   }
 
   private Integer installNvm() throws IOException, InterruptedException {
-    listener.getLogger().println("Installing nvm\n");
-    FilePath installer = build.getWorkspace().child("nvm-installer");
+    buildLogger.println("Installing nvm\n");
+
+    FilePath installer = workspace.child("nvm-installer");
     installer.copyFrom(new URL("https://raw.github.com/creationix/nvm/master/install.sh"));
     installer.chmod(0755);
     ArgumentListBuilder args = new ArgumentListBuilder();
 
     args.add(installer.absolutize().getRemote());
 
-    int statusCode = launcher.launch().cmds(args).pwd(build.getWorkspace())
-      .stdout(listener.getLogger())
-      .stderr(listener.getLogger()).join();
-
-    return statusCode;
+    return launcher.launch().cmds(args).pwd(workspace)
+      .stdout(buildLogger)
+      .stderr(buildLogger).join();
   }
 
   private Map<String, String> toMap(String export) {
