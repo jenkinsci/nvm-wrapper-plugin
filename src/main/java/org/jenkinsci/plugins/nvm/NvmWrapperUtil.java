@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,8 +20,6 @@ public class NvmWrapperUtil {
   private FilePath workspace;
   private Launcher launcher;
   private TaskListener listener;
-
-  private java.nio.file.FileSystem fs = FileSystems.getDefault();
 
   private List<String> nvmPaths = Arrays.asList(
     System.getProperty("user.home") + "/.nvm/nvm.sh",
@@ -112,8 +109,14 @@ public class NvmWrapperUtil {
 
   //**
   private Optional<String> getNvmPath() {
+    return nvmPaths.stream().filter((String str) -> {
+      Boolean exists = false;
+      try {
+        exists = workspace.child(str).exists();
+      } catch (IOException|InterruptedException e) {}
 
-    return nvmPaths.stream().filter((String str) -> fs.getPath(str).toFile().exists())
+      return exists;
+    })
       .findFirst();
 
   }
