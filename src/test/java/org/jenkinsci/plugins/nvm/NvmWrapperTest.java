@@ -2,12 +2,19 @@ package org.jenkinsci.plugins.nvm;
 
 import hudson.FilePath;
 import hudson.Functions;
-import hudson.model.*;
-import hudson.tasks.*;
-import org.jenkinsci.plugins.workflow.cps.*;
-import org.jenkinsci.plugins.workflow.job.*;
-import org.junit.*;
-import org.jvnet.hudson.test.*;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.tasks.BatchFile;
+import hudson.tasks.Builder;
+import hudson.tasks.Shell;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.jvnet.hudson.test.BuildWatcher;
+import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
 
