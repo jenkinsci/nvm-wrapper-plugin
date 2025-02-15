@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.steps.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -105,7 +105,7 @@ public class NvmStep extends Step {
     }
 
     @Override
-    public Step newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+    public Step newInstance(StaplerRequest2 req, JSONObject formData) throws FormException {
       final String versionFromFormData = formData.getString("version");
       final String nvmInstallURLFromFormData = formData.getString("nvmInstallURL");
       final String nvmNodeJsOrgMirrorFromFormData = formData.getString("nvmNodeJsOrgMirror");
