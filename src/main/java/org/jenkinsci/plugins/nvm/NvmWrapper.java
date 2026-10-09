@@ -3,12 +3,12 @@ package org.jenkinsci.plugins.nvm;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.tasks.BuildWrapper;
 import hudson.tasks.BuildWrapperDescriptor;
-import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
@@ -30,10 +30,10 @@ public class NvmWrapper extends BuildWrapper {
   public NvmWrapper(String version, String nvmInstallDir, String nvmNodeJsOrgMirror,
                     String nvmIoJsOrgMirror, String nvmInstallURL) {
     this.version = version;
-    this.nvmInstallURL = StringUtils.defaultIfEmpty(nvmInstallURL, NvmDefaults.NVM_INSTALL_URL);
-    this.nvmNodeJsOrgMirror = StringUtils.defaultIfEmpty(nvmNodeJsOrgMirror, NvmDefaults.NVM_NODE_JS_ORG_MIRROR);
-    this.nvmIoJsOrgMirror = StringUtils.defaultIfEmpty(nvmIoJsOrgMirror, NvmDefaults.NVM_IO_JS_ORG_MIRROR);
-    this.nvmInstallDir = StringUtils.defaultIfEmpty(nvmInstallDir, NvmDefaults.NVM_INSTALL_DIR);
+    this.nvmInstallURL = Util.fixNull(Util.fixEmpty(nvmInstallURL), NvmDefaults.NVM_INSTALL_URL);
+    this.nvmNodeJsOrgMirror = Util.fixNull(Util.fixEmpty(nvmNodeJsOrgMirror), NvmDefaults.NVM_NODE_JS_ORG_MIRROR);
+    this.nvmIoJsOrgMirror = Util.fixNull(Util.fixEmpty(nvmIoJsOrgMirror), NvmDefaults.NVM_IO_JS_ORG_MIRROR);
+    this.nvmInstallDir = Util.fixNull(Util.fixEmpty(nvmInstallDir), NvmDefaults.NVM_INSTALL_DIR);
   }
 
   public String getVersion() {
@@ -66,8 +66,8 @@ public class NvmWrapper extends BuildWrapper {
     this.wrapperUtil = new NvmWrapperUtil(build.getWorkspace(), launcher, listener);
 
     String nodeMirrorBinaries = this.version.contains("iojs") ?
-      "NVM_IOJS_ORG_MIRROR=" + StringUtils.defaultIfEmpty(nvmIoJsOrgMirror, NvmDefaults.NVM_IO_JS_ORG_MIRROR):
-      "NVM_NODEJS_ORG_MIRROR=" + StringUtils.defaultIfEmpty(nvmNodeJsOrgMirror, NvmDefaults.NVM_NODE_JS_ORG_MIRROR);
+      "NVM_IOJS_ORG_MIRROR=" + Util.fixNull(Util.fixEmpty(nvmIoJsOrgMirror), NvmDefaults.NVM_IO_JS_ORG_MIRROR):
+      "NVM_NODEJS_ORG_MIRROR=" + Util.fixNull(Util.fixEmpty(nvmNodeJsOrgMirror), NvmDefaults.NVM_NODE_JS_ORG_MIRROR);
 
     final Map<String, String> npmEnvVars = this.wrapperUtil.getNpmEnvVars(
                                             this.version, this.nvmInstallDir,

@@ -45,11 +45,11 @@ public class NvmWrapperTest {
   public void freestyleNVMOptionVersion() throws Exception {
 
     final String command = "echo $PATH";
-    NvmWrapper nvmWrapper = new NvmWrapper("v0.10.25", null,
+    NvmWrapper nvmWrapper = new NvmWrapper("v26.11.1", null,
       null, null, null);
 
     FreeStyleBuild build = createBuildWithNvmWrapper(jenkinsRule, nvmWrapper, command);
-    jenkinsRule.assertLogContains("v0.10.25", build);
+    jenkinsRule.assertLogContains("v26.11.1", build);
 
   }
 
@@ -72,11 +72,14 @@ public class NvmWrapperTest {
 
 
     final String command = "echo $PATH";
-    NvmWrapper nvmWrapper = new NvmWrapper("v8.12.0", null,
-      "https://npm.taobao.org/mirrors/node", null, null);
+    NvmWrapper nvmWrapper = new NvmWrapper("v26.11.1", null,
+      "https://registry.npmmirror.com/-/binary/node", null, null);
 
     FreeStyleBuild build = createBuildWithNvmWrapper(jenkinsRule, nvmWrapper, command);
-    jenkinsRule.assertLogContains("Downloading https://npm.taobao.org/", build);
+    // Assert the custom mirror is passed through to nvm. We check the env var that is
+    // always present in the command (regardless of whether the binary was already cached),
+    // instead of the "Downloading ..." line which only appears on a cache miss.
+    jenkinsRule.assertLogContains("NVM_NODEJS_ORG_MIRROR=https://registry.npmmirror.com/-/binary/node", build);
   }
 
 
@@ -84,11 +87,11 @@ public class NvmWrapperTest {
   public void pipelineNVM() throws Exception {
 
     WorkflowJob project = jenkinsRule.createProject(WorkflowJob.class);
-    project.setDefinition(new CpsFlowDefinition("node { nvm('v0.10.9') { sh 'env'} }", true));
+    project.setDefinition(new CpsFlowDefinition("node { nvm('v26.11.1') { sh 'env'} }", true));
 
 
     WorkflowRun build = jenkinsRule.buildAndAssertSuccess(project);
 
-    jenkinsRule.assertLogContains("v0.10.9/bin", build);
+    jenkinsRule.assertLogContains("v26.11.1/bin", build);
   }
 }

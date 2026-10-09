@@ -5,9 +5,9 @@ import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.TaskListener;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.steps.*;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -114,15 +114,15 @@ public class NvmStep extends Step {
 
       NvmStep nvmStep = new NvmStep(versionFromFormData);
 
-      if (StringUtils.isNotBlank(nvmInstallURLFromFormData)) {
+      if (Util.fixEmptyAndTrim(nvmInstallURLFromFormData) != null) {
         nvmStep.setNvmInstallURL(nvmInstallURLFromFormData);
       }
 
-      if (StringUtils.isNotBlank(nvmNodeJsOrgMirrorFromFormData)) {
+      if (Util.fixEmptyAndTrim(nvmNodeJsOrgMirrorFromFormData) != null) {
         nvmStep.setNvmNodeJsOrgMirror(nvmNodeJsOrgMirrorFromFormData);
       }
 
-      if (StringUtils.isNotBlank(nvmIoJsOrgMirrorFromFormData)) {
+      if (Util.fixEmptyAndTrim(nvmIoJsOrgMirrorFromFormData) != null) {
         nvmStep.setNvmIoJsOrgMirror(nvmIoJsOrgMirrorFromFormData);
       }
 
@@ -171,8 +171,8 @@ public class NvmStep extends Step {
       final NvmWrapperUtil wrapperUtil = new NvmWrapperUtil(workspace, launcher, launcher.getListener());
 
       String nodeMirrorBinaries = nodeVersion.contains("iojs") ?
-        "NVM_IOJS_ORG_MIRROR=" + StringUtils.defaultIfEmpty(nvmIoJsOrgMirror, NvmDefaults.NVM_IO_JS_ORG_MIRROR):
-        "NVM_NODEJS_ORG_MIRROR=" + StringUtils.defaultIfEmpty(nvmNodeJsOrgMirror, NvmDefaults.NVM_NODE_JS_ORG_MIRROR);
+        "NVM_IOJS_ORG_MIRROR=" + Util.fixNull(Util.fixEmpty(nvmIoJsOrgMirror), NvmDefaults.NVM_IO_JS_ORG_MIRROR):
+        "NVM_NODEJS_ORG_MIRROR=" + Util.fixNull(Util.fixEmpty(nvmNodeJsOrgMirror), NvmDefaults.NVM_NODE_JS_ORG_MIRROR);
 
 
       final Map<String, String> npmEnvVars = wrapperUtil.getNpmEnvVars(this.nodeVersion, this.nvmInstallDir,

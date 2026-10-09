@@ -3,9 +3,9 @@ package org.jenkinsci.plugins.nvm;
 import hudson.AbortException;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.util.ArgumentListBuilder;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,12 +30,12 @@ public class NvmWrapperUtil {
     throws IOException, InterruptedException {
 
 
-    String nvmDir = StringUtils.defaultIfEmpty(nvmInstallDir, NvmDefaults.NVM_INSTALL_DIR);
-    nvmDir = nvmDir.endsWith("/") ? StringUtils.stripEnd(nvmDir, "/")  : nvmDir;
+    String nvmDir = Util.fixNull(Util.fixEmpty(nvmInstallDir), NvmDefaults.NVM_INSTALL_DIR);
+    nvmDir = nvmDir.endsWith("/") ? nvmDir.replaceAll("/+$", "")  : nvmDir;
     final String nvmFilePath = nvmDir + "/nvm.sh";
 
     if(fileExist(nvmFilePath) == false){ //NVM is not installed
-      int statusCode = installNvm(StringUtils.defaultIfEmpty(nvmInstallURL, NvmDefaults.NVM_INSTALL_URL),
+      int statusCode = installNvm(Util.fixNull(Util.fixEmpty(nvmInstallURL), NvmDefaults.NVM_INSTALL_URL),
         nvmDir, nodeMirrorBinaries, nodeVersion);
 
       if (statusCode != 0) {
@@ -150,7 +150,7 @@ public class NvmWrapperUtil {
       cmdBuild.add("NVM_DIR=" + nvmInstallDir);
     }
 
-    if (StringUtils.isNotBlank(nvmInstallNodeVersion)) {
+    if (Util.fixEmptyAndTrim(nvmInstallNodeVersion) != null) {
       cmdBuild.add("NODE_VERSION=" + nvmInstallNodeVersion);
     }
     cmdBuild.add(nodeMirrorBinaries);
